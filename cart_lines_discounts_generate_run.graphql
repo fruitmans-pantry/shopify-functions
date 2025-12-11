@@ -1,0 +1,66 @@
+# Cookie Box Discount Function - Input Query
+# ==========================================
+# This query defines what data the discount function receives from Shopify.
+# Only request the fields your function actually needs for better performance.
+
+query Input {
+  cart {
+    lines {
+      # Unique identifier for this cart line (required for targeting discounts)
+      id
+      
+      # How many of this item are in the cart
+      quantity
+      
+      # Cost information
+      cost {
+        # Price per single unit
+        amountPerQuantity {
+          amount
+        }
+        # Total for this line (quantity × unit price)
+        subtotalAmount {
+          amount
+        }
+      }
+      
+      # Product information
+      merchandise {
+        # Used to filter to ProductVariant type
+        __typename
+        
+        ... on ProductVariant {
+          # Variant ID (useful for debugging)
+          id
+          
+          # Variant title - e.g., "500g" or "1kg"
+          # This is the primary way we identify box size
+          title
+          
+          # SKU - alternative way to identify size if encoded in SKU
+          sku
+          
+          # Optional: Metafield for box size (more reliable if set up)
+          # Uncomment the following if you're using metafields:
+          # boxSize: metafield(namespace: "custom", key: "box_size") {
+          #   value
+          # }
+          
+          # Parent product information
+          product {
+            id
+            title
+            handle
+          }
+        }
+      }
+    }
+  }
+  
+  # Discount configuration
+  discount {
+    # Which discount classes this discount applies to
+    # Our function checks for PRODUCT class
+    discountClasses
+  }
+}

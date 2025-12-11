@@ -1,0 +1,32 @@
+# Cookie Box Discount Function - Extension Configuration
+# ======================================================
+# This file configures your Shopify Function extension.
+# Place this in: extensions/cookie-box-discount/shopify.extension.toml
+
+# API version - use the latest stable version
+api_version = "2025-04"
+
+# Extension metadata
+[[extensions]]
+name = "Cookie Box Quantity Discount"
+handle = "cookie-box-discount"
+type = "function"
+description = "Applies bundle discounts for 6 or 12 cookie boxes of the same size (500g or 1kg)"
+
+# Function target configuration
+# This targets cart line discounts (product-level discounts)
+[[extensions.targeting]]
+target = "cart.lines.discounts.generate.run"
+input_query = "src/cart_lines_discounts_generate_run.graphql"
+export = "cart_lines_discounts_generate_run"
+
+# Build configuration for JavaScript
+[extensions.build]
+command = "npm exec -- shopify app function build"
+path = "dist/function.wasm"
+watch = ["src/**/*.js", "src/**/*.graphql"]
+
+# Localization (optional - for multiple languages)
+# Uncomment if you want to add translations
+# [extensions.localization]
+# default_locale = "en"

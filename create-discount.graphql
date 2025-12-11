@@ -1,0 +1,128 @@
+# ============================================
+# CREATE AUTOMATIC DISCOUNT
+# ============================================
+# Run this in GraphiQL (press 'g' while shopify app dev is running)
+# This creates an automatic discount that uses your function
+
+mutation CreateCookieBoxDiscount {
+  discountAutomaticAppCreate(
+    automaticAppDiscount: {
+      # Display name shown in Shopify Admin
+      title: "Cookie Box Bundle Discount"
+      
+      # Must match the handle in shopify.extension.toml
+      functionHandle: "cookie-box-discount"
+      
+      # This discount applies to products (cart lines)
+      discountClasses: [PRODUCT]
+      
+      # When the discount becomes active
+      startsAt: "2024-01-01T00:00:00"
+      
+      # Optional: Set an end date
+      # endsAt: "2025-12-31T23:59:59"
+      
+      # How this discount combines with other discounts
+      combinesWith: {
+        orderDiscounts: true      # Can stack with order-level discounts
+        productDiscounts: false   # Won't stack with other product discounts
+        shippingDiscounts: true   # Can stack with shipping discounts
+      }
+    }
+  ) {
+    automaticAppDiscount {
+      discountId
+      title
+      status
+    }
+    userErrors {
+      field
+      message
+    }
+  }
+}
+
+
+# ============================================
+# ALTERNATIVELY: CREATE A CODE-BASED DISCOUNT
+# ============================================
+# Use this if you want customers to enter a code to get the discount
+
+# mutation CreateCookieBoxCodeDiscount {
+#   discountCodeAppCreate(
+#     codeAppDiscount: {
+#       title: "Cookie Box Bundle Deal"
+#       functionHandle: "cookie-box-discount"
+#       discountClasses: [PRODUCT]
+#       code: "COOKIEBUNDLE"
+#       startsAt: "2024-01-01T00:00:00"
+#       usageLimit: null
+#       appliesOncePerCustomer: false
+#       combinesWith: {
+#         orderDiscounts: true
+#         productDiscounts: false
+#         shippingDiscounts: true
+#       }
+#     }
+#   ) {
+#     codeAppDiscount {
+#       discountId
+#       title
+#       codes(first: 5) {
+#         nodes {
+#           code
+#         }
+#       }
+#     }
+#     userErrors {
+#       field
+#       message
+#     }
+#   }
+# }
+
+
+# ============================================
+# QUERY: CHECK IF DISCOUNT WAS CREATED
+# ============================================
+# Run this to verify your discount exists
+
+# query GetDiscounts {
+#   discountNodes(first: 10) {
+#     nodes {
+#       id
+#       discount {
+#         ... on DiscountAutomaticApp {
+#           title
+#           status
+#           discountClass
+#         }
+#         ... on DiscountCodeApp {
+#           title
+#           status
+#           codes(first: 5) {
+#             nodes {
+#               code
+#             }
+#           }
+#         }
+#       }
+#     }
+#   }
+# }
+
+
+# ============================================
+# DELETE A DISCOUNT (if needed)
+# ============================================
+# Replace DISCOUNT_ID with the actual ID from the create mutation response
+
+# mutation DeleteDiscount {
+#   discountAutomaticDelete(id: "gid://shopify/DiscountAutomaticNode/DISCOUNT_ID") {
+#     deletedAutomaticDiscountId
+#     userErrors {
+#       field
+#       message
+#     }
+#   }
+# }
